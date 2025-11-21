@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Miyabiノート</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* 表紙 */
+        .cover {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 182, 193, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .cover h1 {
+            font-size: 3em;
+            color: #ff69b4;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.3);
+        }
+
+        .cover p {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* 目次ボタン */
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .menu-button {
+            background: white;
+            border: none;
+            padding: 30px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.2);
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .menu-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.4);
+            background: linear-gradient(135deg, #fff 0%, #fff5f7 100%);
+        }
+
+        .menu-button.active {
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.4);
+        }
+
+        .menu-icon {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* コンテンツエリア */
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(255, 182, 193, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content h2 {
+            color: #ff69b4;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ffb6c1;
+        }
+
+        .content h3 {
+            color: #ff1493;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .content p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .content ul, .content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .content li {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #ff1493;
+        }
+
+        .content pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+
+        .content pre code {
+            background: transparent;
+            padding: 0;
+            color: #333;
+        }
+
+        .highlight {
+            background: linear-gradient(transparent 60%, #ffb6c1 60%);
+            padding: 2px 0;
+        }
+
+        .card {
+            background: #fff5f7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff69b4;
+        }
+
+        .date-entry {
+            border-left: 4px solid #ff69b4;
+            padding-left: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+        }
+
+        .back-to-top.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 表紙 -->
+        <div class="cover">
+            <h1>🌸 Miyabiノート 🌸</h1>
+            <p>毎日の学びを記録する場所</p>
+            <p style="margin-top: 20px; color: #ff69b4;">✨ あなただけの成長の記録 ✨</p>
+        </div>
+
+        <!-- 目次ボタン -->
+        <div class="menu">
+            <button class="menu-button" onclick="showContent('basics')">
+                <span class="menu-icon">📖</span>
+                基本情報
+            </button>
+            <button class="menu-button" onclick="showContent('newproject')">
+                <span class="menu-icon">🚀</span>
+                新規プロジェクト
+            </button>
+            <button class="menu-button" onclick="showContent('daily')">
+                <span class="menu-icon">📅</span>
+                毎日の使い方
+            </button>
+            <button class="menu-button" onclick="showContent('cost')">
+                <span class="menu-icon">💰</span>
+                料金について
+            </button>
+            <button class="menu-button" onclick="showContent('important')">
+                <span class="menu-icon">⚡</span>
+                重要な設定
+            </button>
+            <button class="menu-button" onclick="showContent('commands')">
+                <span class="menu-icon">💡</span>
+                よく使うコマンド
+            </button>
+            <button class="menu-button" onclick="showContent('learning')">
+                <span class="menu-icon">📝</span>
+                学習記録
+            </button>
+            <button class="menu-button" onclick="showContent('tips')">
+                <span class="menu-icon">🎯</span>
+                Tips & Tricks
+            </button>
+            <button class="menu-button" onclick="showContent('progress')">
+                <span class="menu-icon">📊</span>
+                進捗トラッカー
+            </button>
+            <button class="menu-button" onclick="showContent('links')">
+                <span class="menu-icon">🔗</span>
+                リンク集
+            </button>
+        </div>
+
+        <!-- コンテンツエリア -->
+
+        <!-- 基本情報 -->
+        <div id="basics" class="content">
+            <h2>📖 基本情報</h2>
+
+            <div class="card">
+                <h3>Miyabiとは？</h3>
+                <p>Miyabiは<span class="highlight">AI駆動の自動開発フレームワーク</span>です。</p>
+                <ul>
+                    <li>GitHubのIssueを作ると、AIエージェントが自動でコードを書いてくれる</li>
+                    <li>7つのAIエージェントが協力して作業</li>
+                    <li>Pull Requestまで自動で作成</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>セットアップが必要なタイミング</h3>
+                <p><strong>✅ 1回だけ（最初のみ）:</strong></p>
+                <ul>
+                    <li>新しいプロジェクトを作る時</li>
+                    <li><code>npx miyabi init プロジェクト名</code></li>
+                    <li><code>npx miyabi setup</code></li>
+                </ul>
+                <p><strong>❌ 毎日は不要:</strong></p>
+                <ul>
+                    <li>一度セットアップしたら、そのまま使い続けられる</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>日常的な使い方</h3>
+                <ol>
+                    <li><strong>ステータス確認</strong>: <code>npx miyabi status</code></li>
+                    <li><strong>Issue作成</strong>: <code>gh issue create --title "タイトル" --body "説明"</code></li>
+                    <li><strong>AIエージェントが自動作業</strong> → PR作成</li>
+                    <li><strong>レビュー & マージ</strong></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 新規プロジェクトの作り方 -->
+        <div id="newproject" class="content">
+            <h2>🚀 新しいプロジェクトの作り方</h2>
+
+            <div class="card">
+                <h3>完全手順（初めてのプロジェクト）</h3>
+                <pre><code># 1. デスクトップに移動（または好きな場所）
+cd ~/Desktop
+
+# 2. Miyabiプロジェクトを作成
+npx miyabi init プロジェクト名
+
+# 3. プロジェクトフォルダに移動
+cd プロジェクト名
+
+# 4. セットアップを実行
+npx miyabi setup
+
+# 5. VS Codeで開く
+# VS Codeの File → Open Folder → プロジェクトを選択
+
+# 6. ターミナルでClaude Codeを起動
+claude</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>GitHub Secretsの設定（AIエージェント用）</h3>
+                <ol>
+                    <li><strong>Anthropic Console</strong>でAPIキーを取得: <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a></li>
+                    <li><strong>GitHub Secrets</strong>に設定:
+                        <ul>
+                            <li><code>Settings → Secrets and variables → Actions</code></li>
+                            <li>「New repository secret」をクリック</li>
+                            <li>Name: <code>ANTHROPIC_API_KEY</code></li>
+                            <li>Secret: 取得したAPIキー</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="card" style="background: #e8f5e9; border-left-color: #4caf50;">
+                <h3>2つ目以降のプロジェクト（超速い！）</h3>
+                <pre><code># Miyabiはキャッシュされているので超速い（3-5秒）
+npx miyabi init 新しいプロジェクト名
+cd 新しいプロジェクト名
+npx miyabi setup
+
+# GitHub Secretsは各プロジェクトごとに設定が必要</code></pre>
+                <p><strong>重要:</strong> Miyabi本体は1回だけダウンロード、あとはキャッシュから実行されるので速い！</p>
+            </div>
+        </div>
+
+        <!-- 毎日の使い方ガイド -->
+        <div id="daily" class="content">
+            <h2>📅 毎日の使い方ガイド</h2>
+
+            <div class="card">
+                <h3>朝・作業開始時</h3>
+                <pre><code># 1. VS Codeを開く（前日から開きっぱなしでもOK）
+# ログアウト/ログイン不要！
+
+# 2. ターミナルでClaude Codeを起動（必要な場合）
+claude
+
+# 3. プロジェクトのステータスを確認
+npx miyabi status
+
+# 4. 新しいIssueを確認
+gh issue list</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>作業中</h3>
+                <pre><code># やりたいことがあればIssueを作成
+gh issue create --title "機能追加" --body "詳細な説明"
+
+# AIエージェントが自動で作業してくれる
+# 数分〜数十分待つ
+
+# PRができたら確認
+gh pr list
+gh pr view 番号</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>夜・作業終了時</h3>
+                <pre><code># 学習ノートを更新
+# daily-log.txt に今日学んだことを書く
+# Claude Codeに「更新して」と言う
+
+# VS Codeは閉じてもOK、開きっぱなしでもOK
+# 次回起動時も同じプロジェクトが開く</code></pre>
+            </div>
+
+            <div class="card" style="background: #fff3e0; border-left-color: #ff9800;">
+                <h3>重要なポイント</h3>
+                <ul>
+                    <li>✅ VS Codeは毎日ログイン不要</li>
+                    <li>✅ プロジェクトは開きっぱなしでOK</li>
+                    <li>✅ Claude Codeも必要な時だけ起動すればOK</li>
+                    <li>✅ GitHubも常に見る必要はない（後述）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 料金について -->
+        <div id="cost" class="content">
+            <h2>💰 料金・コストについて</h2>
+
+            <div class="card" style="background: #e8f5e9; border-left-color: #4caf50;">
+                <h3>完全無料で使えるもの</h3>
+                <ul>
+                    <li>✅ <strong>Miyabi本体</strong>: 完全無料</li>
+                    <li>✅ <strong>GitHub</strong>: パブリックリポジトリは無料</li>
+                    <li>✅ <strong>GitHub Actions</strong>: 月2,000分まで無料（十分）</li>
+                    <li>✅ <strong>VS Code</strong>: 無料</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>1. Claude Code（必須）</h3>
+                <p><strong>Proプラン: $20/月</strong></p>
+                <ul>
+                    <li>✅ <span class="highlight">これで十分！</span> より高いプランは不要</li>
+                    <li>無制限のチャット</li>
+                    <li>Claude Sonnet 4.5が使える</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>2. Anthropic API（AIエージェント用）</h3>
+                <p><strong>従量課金制: 使った分だけ</strong></p>
+                <ul>
+                    <li>目安: 1日 $0.10〜$1程度</li>
+                    <li>月額: $3〜$30程度（使用頻度による）</li>
+                    <li>最初は$5の無料クレジットあり</li>
+                </ul>
+                <p><strong>参考料金（Claude Sonnet 4）:</strong></p>
+                <ul>
+                    <li>入力: $3 / 1M tokens</li>
+                    <li>出力: $15 / 1M tokens</li>
+                    <li>1回のIssue処理で約$0.10〜$0.50</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>3. GitHub（オプション）</h3>
+                <ul>
+                    <li><strong>Free</strong>: パブリックリポジトリ無制限</li>
+                    <li><strong>Pro ($4/月)</strong>: プライベートリポジトリも無制限</li>
+                    <li>学習目的ならFreeで十分</li>
+                </ul>
+            </div>
+
+            <div class="card" style="background: #e3f2fd; border-left-color: #2196f3;">
+                <h3>月額コスト試算</h3>
+                <p><strong>最小構成（学習目的）:</strong></p>
+                <ul>
+                    <li>Claude Code Pro: $20/月</li>
+                    <li>Anthropic API: $5/月（週に数回使う程度）</li>
+                    <li>GitHub: $0（Free）</li>
+                    <li><strong>合計: 約$25/月（約3,500円）</strong></li>
+                </ul>
+                <p><strong>積極的に使う場合:</strong></p>
+                <ul>
+                    <li>Claude Code Pro: $20/月</li>
+                    <li>Anthropic API: $20/月（毎日数回使う）</li>
+                    <li>GitHub Pro: $4/月</li>
+                    <li><strong>合計: 約$44/月（約6,200円）</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" style="background: #fff3e0; border-left-color: #ff9800;">
+                <h3>コスト削減のコツ</h3>
+                <ul>
+                    <li>AIエージェント（API）は必要な時だけ使う</li>
+                    <li>手動でできることは自分でやる</li>
+                    <li>複雑なタスクだけAIに任せる</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 重要な設定 -->
+        <div id="important" class="content">
+            <h2>⚡ Miyabiを使う上で大切なこと</h2>
+
+            <div class="card">
+                <h3>必須の設定</h3>
+                <ol>
+                    <li><strong>ANTHROPIC_API_KEY</strong>
+                        <ul>
+                            <li>各プロジェクトのGitHub Secretsに設定</li>
+                            <li>これがないとAIエージェントが動かない</li>
+                            <li>設定場所: <code>Settings → Secrets and variables → Actions</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>GitHub認証</strong>
+                        <ul>
+                            <li><code>gh auth login</code> で1回ログインすればOK</li>
+                            <li>複数プロジェクトで共通</li>
+                        </ul>
+                    </li>
+                    <li><strong>Claude Code</strong>
+                        <ul>
+                            <li>Proプラン（$20/月）に加入</li>
+                            <li>ターミナルで <code>claude</code> コマンドが使える</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h3>Issueの書き方（超重要！）</h3>
+                <p><strong>良いIssueの例:</strong></p>
+                <pre><code>タイトル: ユーザー認証機能を追加
+
+本文:
+## 目的
+ユーザーがログイン/ログアウトできるようにする
+
+## 要件
+- ログインページの作成
+- JWT認証の実装
+- ログイン状態の保持
+- ログアウト機能
+
+## 期待する結果
+/login にアクセスするとログインフォームが表示され、
+認証に成功すると /dashboard にリダイレクトされる</code></pre>
+                <p><strong>悪いIssueの例:</strong></p>
+                <pre><code>ログイン機能</code></pre>
+                <p>→ 詳細が不明確、AIが何をすべきか分からない</p>
+            </div>
+
+            <div class="card">
+                <h3>GitHubの画面をいつ見るか</h3>
+                <p><strong>✅ 見なくても大丈夫な時:</strong></p>
+                <ul>
+                    <li>Issueを作る（<code>gh issue create</code>でOK）</li>
+                    <li>ステータス確認（<code>miyabi status</code>でOK）</li>
+                    <li>日常的な作業</li>
+                </ul>
+                <p><strong>🌐 GitHubを見るべき時:</strong></p>
+                <ol>
+                    <li><strong>PRをレビューする時</strong>（最重要！）
+                        <ul>
+                            <li>AIが作ったコードを確認</li>
+                            <li>変更されたファイルをチェック</li>
+                            <li><code>gh pr view 番号 --web</code> で開く</li>
+                        </ul>
+                    </li>
+                    <li><strong>Issueの詳細を見る時</strong>
+                        <ul>
+                            <li>ラベルの状態を視覚的に確認</li>
+                            <li>コメントを読む</li>
+                        </ul>
+                    </li>
+                    <li><strong>GitHub Actions（CI/CD）の確認</strong>
+                        <ul>
+                            <li>エラーが出た時、ログを見る</li>
+                            <li><code>https://github.com/ユーザー名/プロジェクト名/actions</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>全体の進捗確認</strong>
+                        <ul>
+                            <li>何個Issueが残っているか</li>
+                            <li>どのPRがマージ待ちか</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h3>AIエージェントとの付き合い方</h3>
+                <p><strong>✅ AIに任せるべきこと:</strong></p>
+                <ul>
+                    <li>定型的なコード生成</li>
+                    <li>テストの作成</li>
+                    <li>ドキュメント作成</li>
+                    <li>リファクタリング</li>
+                </ul>
+                <p><strong>❌ 自分でやるべきこと:</strong></p>
+                <ul>
+                    <li>アーキテクチャの決定</li>
+                    <li>セキュリティの検討</li>
+                    <li>最終的なレビュー</li>
+                    <li>デプロイ判断</li>
+                </ul>
+            </div>
+
+            <div class="card" style="background: #ffebee; border-left-color: #f44336;">
+                <h3>⚠️ セキュリティ上の注意</h3>
+                <p><strong>絶対にやってはいけないこと:</strong></p>
+                <ul>
+                    <li>APIキーをコードにハードコーディング</li>
+                    <li><code>.env</code> ファイルをGitにコミット</li>
+                    <li>パスワードをIssueに書く</li>
+                </ul>
+                <p><strong>やるべきこと:</strong></p>
+                <ul>
+                    <li>機密情報はGitHub Secretsに保存</li>
+                    <li><code>.gitignore</code> で <code>.env</code> を除外</li>
+                    <li>定期的にAPIキーをローテーション</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>トラブルシューティング</h3>
+                <p><strong>問題: AIエージェントが動かない</strong></p>
+                <ul>
+                    <li>→ ANTHROPIC_API_KEYを確認</li>
+                    <li>→ GitHub Actionsのログを確認</li>
+                </ul>
+                <p><strong>問題: PRが作成されない</strong></p>
+                <ul>
+                    <li>→ Issueのラベルを確認</li>
+                    <li>→ <code>miyabi status</code> でステータス確認</li>
+                </ul>
+                <p><strong>問題: コストが高い</strong></p>
+                <ul>
+                    <li>→ 複雑なタスクのみAIに任せる</li>
+                    <li>→ 簡単な修正は手動で行う</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- よく使うコマンド -->
+        <div id="commands" class="content">
+            <h2>💡 よく使うコマンド</h2>
+
+            <div class="card">
+                <h3>プロジェクト管理</h3>
+                <pre><code># プロジェクトの状態を確認
+npx miyabi status
+
+# リアルタイムで監視
+npx miyabi status --watch</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>Issue管理</h3>
+                <pre><code># 新しいIssueを作成
+gh issue create --title "やりたいこと" --body "詳細"
+
+# Issueの一覧を見る
+gh issue list
+
+# 特定のIssueを見る
+gh issue view 番号</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>Pull Request</h3>
+                <pre><code># Pull Requestの一覧を見る
+gh pr list
+
+# GitHubで開く
+gh repo view --web</code></pre>
+            </div>
+        </div>
+
+        <!-- 学習記録 -->
+        <div id="learning" class="content">
+            <h2>📝 学習記録</h2>
+
+            <div class="date-entry">
+                <h3>2025-11-21（初日）🌸</h3>
+
+                <h4>✨ 今日学んだこと</h4>
+                <ul>
+                    <li>✅ Miyabiプロジェクトのセットアップ方法</li>
+                    <li>✅ プロジェクトの構造（GitHubリポジトリ、46個のラベル、14個のワークフロー）</li>
+                    <li>✅ Issueの作り方 - Issue = AIエージェントへの指示書</li>
+                    <li>✅ VS Codeの使い方（エディタとターミナル）</li>
+                    <li>✅ Claude Codeとの対話 - 日本語で質問できる！</li>
+                    <li>✅ Markdownファイル(.md)の仕組み</li>
+                    <li>✅ 綺麗なUIで学習ノートを見る方法</li>
+                </ul>
+
+                <h4>🎯 やってみたこと</h4>
+                <ul>
+                    <li>Miyabiプロジェクトの初期化</li>
+                    <li><code>miyabi status</code> でステータス確認</li>
+                    <li>初めてのIssue作成（Issue #2: Miyabi学習ノート）</li>
+                    <li>学習ノート用の綺麗なUIページを作成</li>
+                </ul>
+
+                <h4>❓ 疑問点・解決したこと</h4>
+                <ul>
+                    <li>✅ セットアップは毎日必要？ → 最初の1回だけでOK</li>
+                    <li>✅ Issueとは？ → やりたいことを書くメモ</li>
+                    <li>✅ .mdファイルとは？ → Markdown形式の文章ファイル</li>
+                    <li>✅ UIで綺麗に見るには？ → HTMLページやGitHub Pagesで可能</li>
+                </ul>
+
+                <h4>📌 次にやりたいこと</h4>
+                <ul>
+                    <li>ANTHROPIC_API_KEYを設定してAIエージェントを動かす</li>
+                    <li>簡単な機能をIssueで作成してみる</li>
+                    <li>Pull Requestのレビュー & マージを体験</li>
+                    <li>このUIページをさらにカスタマイズ</li>
+                </ul>
+
+                <h4>💭 メモ・気づき</h4>
+                <p class="card">
+                    Claude Codeは日本語で会話できるので安心。わからないことはすぐ聞ける。
+                    使いながら学ぶのが一番良い。最初は混乱したが、徐々に慣れてきた。
+                    自分だけの学習UIを持つと、学習のモチベーションが上がる！🌸
+                </p>
+            </div>
+
+            <div class="card" style="background: #f0f8ff; border-left-color: #4169e1;">
+                <h4>📅 新しい日の記録テンプレート</h4>
+                <p>毎日、このテンプレートを使って記録を追加していきましょう！</p>
+            </div>
+        </div>
+
+        <!-- Tips & Tricks -->
+        <div id="tips" class="content">
+            <h2>🎯 Tips & Tricks</h2>
+
+            <div class="card">
+                <h3>効率的なIssue作成</h3>
+                <ul>
+                    <li><strong>タイトル</strong>: 簡潔に「何をするか」</li>
+                    <li><strong>本文</strong>: 詳細な説明、期待する結果</li>
+                </ul>
+                <p><strong>例:</strong></p>
+                <pre><code>タイトル: Hello World関数を追加
+本文:
+src/index.tsにHello Worldを返す関数を作成してください。
+
+要件:
+- 関数名: sayHello
+- 戻り値: "Hello, World!"
+- テストも作成</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>ラベルの意味</h3>
+                <ul>
+                    <li><strong>type:*</strong> → 種類（bug, feature, docs, refactor, test）</li>
+                    <li><strong>priority:*</strong> → 優先度（P0-Critical, P1-High, P2-Medium, P3-Low）</li>
+                    <li><strong>state:*</strong> → 状態（pending, analyzing, implementing, reviewing, done）</li>
+                    <li><strong>phase:*</strong> → フェーズ（planning, design, development, review, deployment）</li>
+                    <li><strong>agent:*</strong> → 担当エージェント（coordinator, codegen, review, issue, pr, deploy）</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>VS Code便利なショートカット</h3>
+                <ul>
+                    <li><code>Cmd + P</code> → ファイルを素早く開く</li>
+                    <li><code>Cmd + J</code> → ターミナルを開く/閉じる</li>
+                    <li><code>Cmd + Shift + P</code> → コマンドパレット</li>
+                    <li><code>Cmd + \</code> → エディタを分割</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 進捗トラッカー -->
+        <div id="progress" class="content">
+            <h2>📊 進捗トラッカー</h2>
+
+            <div class="card">
+                <h3>✅ 完了したこと</h3>
+                <ul>
+                    <li>✓ Miyabiプロジェクトのセットアップ</li>
+                    <li>✓ 基本的なコマンドの理解</li>
+                    <li>✓ Issueの作成方法</li>
+                    <li>✓ VS Codeの基本操作</li>
+                    <li>✓ 綺麗なUI学習ノートの作成</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>🔄 進行中</h3>
+                <ul>
+                    <li>AIエージェントの設定（ANTHROPIC_API_KEY）</li>
+                    <li>実際の機能開発の体験</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📋 今後やりたいこと</h3>
+                <ul>
+                    <li>自動化されたPRの体験</li>
+                    <li>エージェントの動作を理解する</li>
+                    <li>自分のアイデアを実装する</li>
+                    <li>GitHub Pagesで公開する</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- リンク集 -->
+        <div id="links" class="content">
+            <h2>🔗 リンク集</h2>
+
+            <div class="card">
+                <h3>プロジェクト関連</h3>
+                <ul>
+                    <li><a href="https://github.com/tukipinkmoon/my-miyabi-project" target="_blank">GitHubリポジトリ</a></li>
+                    <li><a href="https://github.com/tukipinkmoon/my-miyabi-project/issues" target="_blank">Issues</a></li>
+                    <li><a href="https://github.com/tukipinkmoon/my-miyabi-project/pulls" target="_blank">Pull Requests</a></li>
+                    <li><a href="https://github.com/tukipinkmoon/my-miyabi-project/actions" target="_blank">Actions</a></li>
+                    <li><a href="https://github.com/tukipinkmoon/my-miyabi-project/settings/secrets/actions" target="_blank">Settings - Secrets</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Miyabi関連</h3>
+                <ul>
+                    <li><a href="https://github.com/ShunsukeHayashi/Miyabi" target="_blank">Miyabi Framework</a></li>
+                    <li><a href="https://www.npmjs.com/package/miyabi" target="_blank">NPM Package</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Claude & Anthropic</h3>
+                <ul>
+                    <li><a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a></li>
+                    <li><a href="https://docs.claude.com/en/docs/claude-code" target="_blank">Claude Code Docs</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- トップに戻るボタン -->
+    <button class="back-to-top" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // コンテンツ切り替え
+        function showContent(sectionId) {
+            // 全てのコンテンツを非表示
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 全てのボタンの選択状態を解除
+            document.querySelectorAll('.menu-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // 選択されたコンテンツを表示
+            document.getElementById(sectionId).classList.add('active');
+
+            // 選択されたボタンをアクティブに
+            event.target.closest('.menu-button').classList.add('active');
+
+            // スムーズにスクロール
+            window.scrollTo({ top: 600, behavior: 'smooth' });
+        }
+
+        // トップに戻る
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // スクロール時にトップに戻るボタンを表示
+        window.addEventListener('scroll', () => {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
