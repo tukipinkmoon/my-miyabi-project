@@ -713,6 +713,80 @@ gh repo view --web</code></pre>
                 </p>
             </div>
 
+            <div class="date-entry">
+                <h3>2025-11-24（2日目）🌸</h3>
+
+                <h4>✨ 今日学んだこと</h4>
+                <ul>
+                    <li>✅ GitHubリポジトリのローカルへのクローン方法</li>
+                    <li>✅ <code>npx miyabi</code> コマンドの使い方
+                        <ul>
+                            <li><code>npx miyabi --help</code> でコマンド一覧を確認</li>
+                            <li><code>npx miyabi setup</code> でセットアップ実行</li>
+                            <li><code>npx miyabi status</code> でプロジェクトの状態確認</li>
+                        </ul>
+                    </li>
+                    <li>✅ GitHub Pagesへのデプロイ方法
+                        <ul>
+                            <li><code>index.html</code> を作成してpush</li>
+                            <li>GitHub APIでPages有効化</li>
+                        </ul>
+                    </li>
+                    <li>✅ Miyabiプロジェクトのステータス確認
+                        <ul>
+                            <li>Pending Issues: 3件</li>
+                            <li>AIエージェントを動かすにはANTHROPIC_API_KEYが必要</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4>🎯 やってみたこと</h4>
+                <ul>
+                    <li>GitHubリポジトリ <code>my-miyabi-project</code> をローカルにクローン</li>
+                    <li><code>npx miyabi setup</code> でセットアップ実行</li>
+                    <li><code>npx miyabi status</code> でプロジェクトステータス確認
+                        <ul>
+                            <li>結果: 3つのIssueが pending 状態</li>
+                            <li>アクティブなエージェント: 0</li>
+                        </ul>
+                    </li>
+                    <li><code>miyabi-notes.html</code> をブラウザで開いて表示確認</li>
+                    <li>GitHub Pagesにデプロイ
+                        <ul>
+                            <li><code>miyabi-notes.html</code> を <code>index.html</code> としてコピー</li>
+                            <li>GitHubにpush</li>
+                            <li>GitHub Pages有効化</li>
+                            <li>公開URL: <a href="https://tukipinkmoon.github.io/my-miyabi-project/" target="_blank">https://tukipinkmoon.github.io/my-miyabi-project/</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4>❓ 疑問点・解決したこと</h4>
+                <ul>
+                    <li>✅ リポジトリのクローン方法 → <code>git clone</code> コマンドで実行</li>
+                    <li>✅ HTMLファイルの公開方法 → GitHub Pagesを使用</li>
+                    <li>✅ miyabiコマンドの使い方 → <code>--help</code> で確認可能</li>
+                    <li>⏳ ANTHROPIC_API_KEYの設定 → 次回設定予定</li>
+                </ul>
+
+                <h4>📌 次にやりたいこと</h4>
+                <ul>
+                    <li>ANTHROPIC_API_KEYをGitHub Secretsに設定</li>
+                    <li>AIエージェントを実際に動かしてみる</li>
+                    <li>既存の3つのIssueを確認して処理する</li>
+                    <li>新しいIssueを作成してAIエージェントに作業させる</li>
+                </ul>
+
+                <h4>💭 メモ・気づき</h4>
+                <p class="card">
+                    GitHubリポジトリの内容はドキュメント中心で、実際の開発プロジェクトではなかった。
+                    Miyabiコマンドは非対話モードでも動作する（<code>-y</code> オプション）。
+                    GitHub Pagesは数分でデプロイされる（ビルド時間が必要）。
+                    <code>GITHUB_TOKEN</code> 環境変数の設定が必要な場合がある。
+                    Claude Codeと一緒に作業することで、スムーズに進められた！🌸
+                </p>
+            </div>
+
             <div class="card" style="background: #f0f8ff; border-left-color: #4169e1;">
                 <h4>📅 新しい日の記録テンプレート</h4>
                 <p>毎日、このテンプレートを使って記録を追加していきましょう！</p>

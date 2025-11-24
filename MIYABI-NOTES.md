@@ -358,6 +358,55 @@ gh repo view --web
 
 ---
 
+### 2025-11-24（2日目）
+
+#### 今日学んだこと
+- ✅ GitHubリポジトリのローカルへのクローン方法
+- ✅ `npx miyabi` コマンドの使い方
+  - `npx miyabi --help` でコマンド一覧を確認
+  - `npx miyabi setup` でセットアップ実行
+  - `npx miyabi status` でプロジェクトの状態確認
+- ✅ GitHub Pagesへのデプロイ方法
+  - `index.html` を作成してpush
+  - GitHub APIでPages有効化
+- ✅ Miyabiプロジェクトのステータス確認
+  - Pending Issues: 3件
+  - AIエージェントを動かすにはANTHROPIC_API_KEYが必要
+
+#### やってみたこと
+1. GitHubリポジトリ `my-miyabi-project` をローカルにクローン
+2. `npx miyabi setup` でセットアップ実行
+3. `npx miyabi status` でプロジェクトステータス確認
+   - 結果: 3つのIssueが pending 状態
+   - アクティブなエージェント: 0
+4. `miyabi-notes.html` をブラウザで開いて表示確認
+5. GitHub Pagesにデプロイ
+   - `miyabi-notes.html` を `index.html` としてコピー
+   - GitHubにpush
+   - GitHub Pages有効化
+   - 公開URL: https://tukipinkmoon.github.io/my-miyabi-project/
+
+#### 疑問点・わからなかったこと
+- ✅ 解決: リポジトリのクローン方法 → `git clone` コマンドで実行
+- ✅ 解決: HTMLファイルの公開方法 → GitHub Pagesを使用
+- ✅ 解決: miyabiコマンドの使い方 → `--help` で確認可能
+- ⏳ 保留: ANTHROPIC_API_KEYの設定 → 次回設定予定
+
+#### 次にやりたいこと
+- [ ] ANTHROPIC_API_KEYをGitHub Secretsに設定
+- [ ] AIエージェントを実際に動かしてみる
+- [ ] 既存の3つのIssueを確認して処理する
+- [ ] 新しいIssueを作成してAIエージェントに作業させる
+
+#### メモ・気づき
+- GitHubリポジトリの内容はドキュメント中心で、実際の開発プロジェクトではなかった
+- Miyabiコマンドは非対話モードでも動作する（`-y` オプション）
+- GitHub Pagesは数分でデプロイされる（ビルド時間が必要）
+- `GITHUB_TOKEN` 環境変数の設定が必要な場合がある
+- Claude Codeと一緒に作業することで、スムーズに進められた
+
+---
+
 ### YYYY-MM-DD（日付）
 
 #### 今日学んだこと
