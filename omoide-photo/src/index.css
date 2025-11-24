@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  background: linear-gradient(135deg, #ffeef8 0%, #fff5f7 100%);
+  min-height: 100vh;
+}
+
+/* 高齢者向けの大きなボタン */
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-pink-400 to-pink-500;
+    @apply text-white font-bold;
+    @apply px-8 py-4 rounded-2xl;
+    @apply text-elderly-lg;
+    @apply shadow-lg hover:shadow-xl;
+    @apply transform hover:scale-105;
+    @apply transition-all duration-200;
+    @apply min-h-tap min-w-[200px];
+  }
+
+  .btn-secondary {
+    @apply bg-white;
+    @apply text-gray-700 font-bold;
+    @apply px-8 py-4 rounded-2xl;
+    @apply text-elderly-lg;
+    @apply shadow-md hover:shadow-lg;
+    @apply transform hover:scale-105;
+    @apply transition-all duration-200;
+    @apply min-h-tap min-w-[200px];
+  }
+
+  .card {
+    @apply bg-white rounded-3xl shadow-xl;
+    @apply p-8;
+    @apply transform transition-all duration-300;
+  }
+
+  .step-indicator {
+    @apply flex items-center justify-center;
+    @apply text-elderly font-bold;
+    @apply mb-8;
+  }
+
+  .step {
+    @apply flex items-center;
+  }
+
+  .step-circle {
+    @apply w-12 h-12 rounded-full;
+    @apply flex items-center justify-center;
+    @apply font-bold text-white;
+    @apply transition-all duration-300;
+  }
+
+  .step-circle.active {
+    @apply bg-pink-500 scale-110;
+  }
+
+  .step-circle.completed {
+    @apply bg-green-500;
+  }
+
+  .step-circle.pending {
+    @apply bg-gray-300;
+  }
+
+  .step-line {
+    @apply w-16 h-1 bg-gray-300 mx-2;
+  }
+
+  .step-line.completed {
+    @apply bg-green-500;
+  }
+}
