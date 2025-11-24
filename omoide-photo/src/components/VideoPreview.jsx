@@ -1,13 +1,38 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
-export default function VideoPreview({ videoUrl, onReset }) {
+export default function VideoPreview({ videoUrl, photo, message, onReset }) {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [showMessage, setShowMessage] = useState(false)
+
+  // ページ読み込み時に自動再生
+  useEffect(() => {
+    // 少し遅らせて自動再生
+    const timer = setTimeout(() => {
+      handlePlay()
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handlePlay = () => {
+    setIsPlaying(true)
+    setShowMessage(false)
+
+    // 1秒後にメッセージ表示
+    setTimeout(() => {
+      setShowMessage(true)
+    }, 1000)
+
+    // 5秒後に自動停止
+    setTimeout(() => {
+      setIsPlaying(false)
+    }, 5000)
+  }
+
   const handleDownload = () => {
-    // TODO: 実際のダウンロード処理
-    alert('動画を保存しました！')
+    alert('動画を保存しました！\n\n（デモ版のため、実際の保存機能は次のバージョンで実装されます）')
   }
 
   const handleShare = () => {
-    // TODO: 実際の共有処理
     if (navigator.share) {
       navigator.share({
         title: 'おもいで写真',
@@ -31,18 +56,59 @@ export default function VideoPreview({ videoUrl, onReset }) {
         </p>
       </div>
 
-      <div className="bg-black rounded-3xl overflow-hidden shadow-2xl mb-8">
-        {/* TODO: 実際の動画プレーヤー */}
-        <div className="aspect-video bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-          <div className="text-center text-white">
-            <div className="text-8xl mb-4">▶️</div>
-            <p className="text-elderly">
-              ここに動画が表示されます
-            </p>
-            <p className="text-sm mt-2 text-gray-400">
-              (プロトタイプ版では表示されません)
-            </p>
+      <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl overflow-hidden shadow-2xl mb-8 p-8">
+        {/* デモアニメーション */}
+        <div className="relative">
+          <div className={`transition-all duration-500 ${isPlaying ? 'animate-subtle-bounce' : ''}`}>
+            {photo ? (
+              <img
+                src={photo}
+                alt="思い出の写真"
+                className={`max-w-full max-h-96 mx-auto rounded-2xl shadow-lg transition-all duration-300 ${
+                  isPlaying ? 'scale-105 shadow-2xl' : ''
+                }`}
+              />
+            ) : (
+              <div className="w-full h-96 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center">
+                <span className="text-4xl">📸</span>
+              </div>
+            )}
           </div>
+
+          {/* メッセージ吹き出し */}
+          {showMessage && (
+            <div className="mt-6 animate-fade-in">
+              <div className="bg-white rounded-3xl shadow-xl p-6 relative">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white"></div>
+                <p className="text-elderly-lg text-gray-800 font-medium">
+                  💬 {message || 'いつも見守っているよ'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* 再生ボタン */}
+          {!isPlaying && (
+            <button
+              onClick={handlePlay}
+              className="mt-6 bg-pink-500 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg hover:bg-pink-600 hover:scale-110 transition-all mx-auto"
+            >
+              <span className="text-4xl">▶️</span>
+            </button>
+          )}
+
+          {/* 再生中表示 */}
+          {isPlaying && (
+            <div className="mt-4 text-pink-600 font-bold text-elderly animate-pulse">
+              再生中...
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 bg-blue-50 p-4 rounded-2xl">
+          <p className="text-sm text-gray-600">
+            💡 これはデモ版です。実際のバージョンでは、写真の顔が動いて、音声でメッセージを話します。
+          </p>
         </div>
       </div>
 

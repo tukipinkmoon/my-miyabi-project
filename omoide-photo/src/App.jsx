@@ -123,6 +123,8 @@ function App() {
           {currentStep === 4 && (
             <VideoPreview
               videoUrl={videoUrl}
+              photo={selectedPhoto}
+              message={selectedMessage}
               onReset={handleReset}
             />
           )}

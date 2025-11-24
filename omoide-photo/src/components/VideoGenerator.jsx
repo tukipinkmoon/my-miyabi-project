@@ -28,7 +28,8 @@ export default function VideoGenerator({ photo, message, onComplete, onBack }) {
         clearInterval(interval)
         setTimeout(() => {
           // TODO: 実際のAPI呼び出し
-          onComplete('/demo-video.mp4')
+          // デモ版では写真URLをそのまま渡す
+          onComplete(photo)
         }, 500)
       }
 
