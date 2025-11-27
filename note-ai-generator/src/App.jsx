@@ -8,11 +8,13 @@ import ArticlePreview from './components/ArticlePreview'
 function App() {
   const [currentStep, setCurrentStep] = useState(0)
   const [repoUrl, setRepoUrl] = useState('')
+  const [githubToken, setGithubToken] = useState('')
   const [repoData, setRepoData] = useState(null)
   const [article, setArticle] = useState('')
 
-  const handleUrlSubmit = (url) => {
+  const handleUrlSubmit = ({ url, token }) => {
     setRepoUrl(url)
+    setGithubToken(token)
     setCurrentStep(1)
   }
 
@@ -31,6 +33,14 @@ function App() {
     setRepoUrl('')
     setRepoData(null)
     setArticle('')
+  }
+
+  const handleRegenerate = () => {
+    // 詳細記事を生成
+    import('./utils/articleTemplate').then(({ generateDetailedArticle }) => {
+      const detailedArticle = generateDetailedArticle(repoData)
+      setArticle(detailedArticle)
+    })
   }
 
   return (
@@ -92,6 +102,7 @@ function App() {
           {currentStep === 1 && (
             <RepoAnalyzer
               url={repoUrl}
+              token={githubToken}
               onAnalyzed={handleRepoAnalyzed}
               onBack={() => setCurrentStep(0)}
             />
@@ -110,6 +121,7 @@ function App() {
               article={article}
               repoData={repoData}
               onReset={handleReset}
+              onRegenerate={handleRegenerate}
             />
           )}
         </main>

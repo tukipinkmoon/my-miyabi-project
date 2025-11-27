@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-export default function ArticlePreview({ article, repoData, onReset }) {
+export default function ArticlePreview({ article, repoData, onReset, onRegenerate }) {
   const [copied, setCopied] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
   const handleCopy = async () => {
     try {
@@ -24,6 +25,14 @@ export default function ArticlePreview({ article, repoData, onReset }) {
     URL.revokeObjectURL(url)
   }
 
+  const handleDetailedGenerate = async () => {
+    setGenerating(true)
+    // 少し待機してUIを更新
+    await new Promise(resolve => setTimeout(resolve, 500))
+    onRegenerate()
+    setGenerating(false)
+  }
+
   return (
     <div className="max-w-5xl mx-auto fade-in">
       <div className="card mb-6">
@@ -38,6 +47,13 @@ export default function ArticlePreview({ article, repoData, onReset }) {
         </div>
 
         <div className="flex flex-wrap gap-4 justify-center">
+          <button
+            onClick={handleDetailedGenerate}
+            className="btn-primary bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
+            disabled={generating}
+          >
+            {generating ? '⏳ 生成中...' : '✨ もっと詳しく書く'}
+          </button>
           <button onClick={handleCopy} className="btn-primary">
             {copied ? '✓ コピーしました！' : '📋 記事をコピー'}
           </button>
@@ -72,6 +88,20 @@ export default function ArticlePreview({ article, repoData, onReset }) {
         <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
           <code>{article}</code>
         </pre>
+      </div>
+
+      <div className="mt-6 bg-purple-50 p-6 rounded-xl border-2 border-purple-200">
+        <h3 className="font-bold text-gray-800 mb-3">✨ もっと詳しく書く</h3>
+        <p className="text-sm text-gray-700 mb-3">
+          上の「もっと詳しく書く」ボタンを押すと、READMEをさらに深く分析して、5000文字以上の充実した記事を生成します。
+        </p>
+        <ul className="space-y-2 text-sm text-gray-700 list-disc list-inside">
+          <li>各機能の詳しい説明と具体例</li>
+          <li>実際の使用シーン（朝・仕事中・移動中など）</li>
+          <li>メリットの詳細</li>
+          <li>おすすめの人の詳細</li>
+          <li>必要なものの情報</li>
+        </ul>
       </div>
 
       <div className="mt-6 bg-green-50 p-6 rounded-xl border-2 border-green-200">

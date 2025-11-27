@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-export default function RepoAnalyzer({ url, onAnalyzed, onBack }) {
+export default function RepoAnalyzer({ url, token, onAnalyzed, onBack }) {
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(0)
   const [status, setStatus] = useState('リポジトリ情報を取得中...')
@@ -27,8 +27,13 @@ export default function RepoAnalyzer({ url, onAnalyzed, onBack }) {
       setStatus('リポジトリ情報を取得中...')
 
       // GitHub API: リポジトリ情報
+      const headers = token ? {
+        Authorization: `Bearer ${token}`
+      } : {}
+
       const repoResponse = await axios.get(
-        `https://api.github.com/repos/${owner}/${cleanRepo}`
+        `https://api.github.com/repos/${owner}/${cleanRepo}`,
+        { headers }
       )
 
       setProgress(50)
@@ -37,9 +42,13 @@ export default function RepoAnalyzer({ url, onAnalyzed, onBack }) {
       // GitHub API: README取得
       let readmeContent = ''
       try {
+        const readmeHeaders = {
+          Accept: 'application/vnd.github.raw',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
         const readmeResponse = await axios.get(
           `https://api.github.com/repos/${owner}/${cleanRepo}/readme`,
-          { headers: { Accept: 'application/vnd.github.raw' } }
+          { headers: readmeHeaders }
         )
         readmeContent = readmeResponse.data
       } catch (e) {

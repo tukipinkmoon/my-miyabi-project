@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 export default function UrlInput({ onSubmit }) {
   const [url, setUrl] = useState('')
+  const [token, setToken] = useState('')
   const [error, setError] = useState('')
 
   const validateGitHubUrl = (url) => {
@@ -23,7 +24,7 @@ export default function UrlInput({ onSubmit }) {
       return
     }
 
-    onSubmit(url.trim())
+    onSubmit({ url: url.trim(), token: token.trim() })
   }
 
   const handlePaste = async () => {
@@ -74,12 +75,38 @@ export default function UrlInput({ onSubmit }) {
           )}
         </div>
 
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-2">
+            GitHub Personal Access Token（プライベートリポジトリ用・任意）
+          </label>
+          <input
+            type="password"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+            className="input-field w-full"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            プライベートリポジトリの場合のみ必要です
+          </p>
+        </div>
+
         <div className="bg-blue-50 p-4 rounded-xl border-2 border-blue-200">
           <p className="text-sm text-gray-700">
             <strong>💡 例:</strong><br />
             https://github.com/example/ai-app<br />
             https://github.com/user/awesome-tool
           </p>
+        </div>
+
+        <div className="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-200">
+          <p className="text-sm font-bold text-gray-800 mb-2">🔐 Personal Access Tokenの取得方法</p>
+          <ol className="text-xs text-gray-700 space-y-1 list-decimal list-inside">
+            <li>GitHubの Settings → Developer settings → Personal access tokens → Tokens (classic)</li>
+            <li>「Generate new token (classic)」をクリック</li>
+            <li>「repo」にチェックを入れる</li>
+            <li>トークンを生成してコピー</li>
+          </ol>
         </div>
 
         <button
