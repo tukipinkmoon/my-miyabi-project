@@ -7,19 +7,19 @@ import ArticlePreview from './components/ArticlePreview'
 
 function App() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [repoUrl, setRepoUrl] = useState('')
+  const [repoUrls, setRepoUrls] = useState([])
   const [githubToken, setGithubToken] = useState('')
-  const [repoData, setRepoData] = useState(null)
+  const [repoDataList, setRepoDataList] = useState([])
   const [article, setArticle] = useState('')
 
-  const handleUrlSubmit = ({ url, token }) => {
-    setRepoUrl(url)
+  const handleUrlSubmit = ({ urls, token }) => {
+    setRepoUrls(urls)
     setGithubToken(token)
     setCurrentStep(1)
   }
 
-  const handleRepoAnalyzed = (data) => {
-    setRepoData(data)
+  const handleRepoAnalyzed = (dataList) => {
+    setRepoDataList(dataList)
     setCurrentStep(2)
   }
 
@@ -30,15 +30,15 @@ function App() {
 
   const handleReset = () => {
     setCurrentStep(0)
-    setRepoUrl('')
-    setRepoData(null)
+    setRepoUrls([])
+    setRepoDataList([])
     setArticle('')
   }
 
   const handleRegenerate = () => {
     // 詳細記事を生成
     import('./utils/articleTemplate').then(({ generateDetailedArticle }) => {
-      const detailedArticle = generateDetailedArticle(repoData)
+      const detailedArticle = generateDetailedArticle(repoDataList)
       setArticle(detailedArticle)
     })
   }
@@ -101,7 +101,7 @@ function App() {
 
           {currentStep === 1 && (
             <RepoAnalyzer
-              url={repoUrl}
+              urls={repoUrls}
               token={githubToken}
               onAnalyzed={handleRepoAnalyzed}
               onBack={() => setCurrentStep(0)}
@@ -110,7 +110,7 @@ function App() {
 
           {currentStep === 2 && (
             <ArticleGenerator
-              repoData={repoData}
+              repoDataList={repoDataList}
               onGenerated={handleArticleGenerated}
               onBack={() => setCurrentStep(1)}
             />
@@ -119,7 +119,7 @@ function App() {
           {currentStep === 3 && (
             <ArticlePreview
               article={article}
-              repoData={repoData}
+              repoDataList={repoDataList}
               onReset={handleReset}
               onRegenerate={handleRegenerate}
             />

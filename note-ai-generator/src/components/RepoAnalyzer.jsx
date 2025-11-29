@@ -1,84 +1,89 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-export default function RepoAnalyzer({ url, token, onAnalyzed, onBack }) {
+export default function RepoAnalyzer({ urls, token, onAnalyzed, onBack }) {
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(0)
   const [status, setStatus] = useState('リポジトリ情報を取得中...')
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    analyzeRepo()
+    analyzeRepos()
   }, [])
 
-  const analyzeRepo = async () => {
+  const analyzeSingleRepo = async (url) => {
+    // GitHubのURLからowner/repoを抽出
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/)
+    if (!match) {
+      throw new Error('URLの解析に失敗しました')
+    }
+
+    const [, owner, repo] = match
+    const cleanRepo = repo.replace(/\.git$/, '')
+
+    // GitHub API: リポジトリ情報
+    const headers = token ? {
+      Authorization: `Bearer ${token}`
+    } : {}
+
+    const repoResponse = await axios.get(
+      `https://api.github.com/repos/${owner}/${cleanRepo}`,
+      { headers }
+    )
+
+    // GitHub API: README取得
+    let readmeContent = ''
     try {
-      // GitHubのURLからowner/repoを抽出
-      const match = url.match(/github\.com\/([^\/]+)\/([^\/\?#]+)/)
-      if (!match) {
-        throw new Error('URLの解析に失敗しました')
+      const readmeHeaders = {
+        Accept: 'application/vnd.github.raw',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       }
-
-      const [, owner, repo] = match
-      const cleanRepo = repo.replace(/\.git$/, '')
-
-      // プログレス更新
-      setProgress(25)
-      setStatus('リポジトリ情報を取得中...')
-
-      // GitHub API: リポジトリ情報
-      const headers = token ? {
-        Authorization: `Bearer ${token}`
-      } : {}
-
-      const repoResponse = await axios.get(
-        `https://api.github.com/repos/${owner}/${cleanRepo}`,
-        { headers }
+      const readmeResponse = await axios.get(
+        `https://api.github.com/repos/${owner}/${cleanRepo}/readme`,
+        { headers: readmeHeaders }
       )
+      readmeContent = readmeResponse.data
+    } catch (e) {
+      console.log('README not found for', url)
+    }
 
-      setProgress(50)
-      setStatus('READMEを読み込み中...')
-
-      // GitHub API: README取得
-      let readmeContent = ''
-      try {
-        const readmeHeaders = {
-          Accept: 'application/vnd.github.raw',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        }
-        const readmeResponse = await axios.get(
-          `https://api.github.com/repos/${owner}/${cleanRepo}/readme`,
-          { headers: readmeHeaders }
-        )
-        readmeContent = readmeResponse.data
-      } catch (e) {
-        console.log('README not found')
+    // データ構造化
+    return {
+      name: repoResponse.data.name,
+      fullName: repoResponse.data.full_name,
+      description: repoResponse.data.description || '',
+      stars: repoResponse.data.stargazers_count,
+      language: repoResponse.data.language,
+      topics: repoResponse.data.topics || [],
+      url: repoResponse.data.html_url,
+      readme: readmeContent,
+      owner: {
+        login: repoResponse.data.owner.login,
+        avatar: repoResponse.data.owner.avatar_url
       }
+    }
+  }
 
-      setProgress(75)
-      setStatus('解析完了...')
+  const analyzeRepos = async () => {
+    try {
+      const repoDataList = []
+      const totalRepos = urls.length
 
-      // データ構造化
-      const repoData = {
-        name: repoResponse.data.name,
-        fullName: repoResponse.data.full_name,
-        description: repoResponse.data.description || '',
-        stars: repoResponse.data.stargazers_count,
-        language: repoResponse.data.language,
-        topics: repoResponse.data.topics || [],
-        url: repoResponse.data.html_url,
-        readme: readmeContent,
-        owner: {
-          login: repoResponse.data.owner.login,
-          avatar: repoResponse.data.owner.avatar_url
-        }
+      for (let i = 0; i < urls.length; i++) {
+        setCurrentIndex(i)
+        setStatus(`リポジトリ ${i + 1}/${totalRepos} を解析中...`)
+        setProgress(Math.floor((i / totalRepos) * 100))
+
+        const repoData = await analyzeSingleRepo(urls[i])
+        repoDataList.push(repoData)
       }
 
       setProgress(100)
-      setStatus('完了！')
+      setStatus('全てのリポジトリ解析完了！')
 
       setTimeout(() => {
-        onAnalyzed(repoData)
+        onAnalyzed(repoDataList)
       }, 500)
 
     } catch (err) {

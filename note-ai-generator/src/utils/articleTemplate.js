@@ -1,6 +1,22 @@
 // note記事テンプレート生成 - 詳細分析版
 
-export function generateArticle(repoData) {
+export function generateArticle(repoDataList) {
+  // 配列でない場合（後方互換性）
+  if (!Array.isArray(repoDataList)) {
+    return generateSingleRepoArticle(repoDataList)
+  }
+
+  // 複数リポジトリの場合
+  if (repoDataList.length === 1) {
+    return generateSingleRepoArticle(repoDataList[0])
+  }
+
+  // 複数リポジトリをまとめた記事を生成
+  return generateMultiRepoArticle(repoDataList)
+}
+
+// 単一リポジトリの記事生成
+function generateSingleRepoArticle(repoData) {
   const { name, description, readme, url } = repoData
 
   // READMEを深く分析
@@ -1243,4 +1259,92 @@ export function customizeArticle(article, customizations) {
     result = customizations.intro + '\n\n' + result
   }
   return result
+}
+
+// 複数リポジトリをまとめた記事を生成
+function generateMultiRepoArticle(repoDataList) {
+  const repoNames = repoDataList.map(r => r.name).join('、')
+  const totalStars = repoDataList.reduce((sum, r) => sum + (r.stars || 0), 0)
+
+  // 導入部
+  const intro = `最近、いろいろなAIツールを見ていて。
+
+今回は、${repoDataList.length}つの興味深いツールを見つけたので、まとめて紹介します。
+
+どれも魅力的で、使ってみたくなるものばかり。`
+
+  // 各リポジトリの紹介セクション
+  const repoSections = repoDataList.map((repoData, index) => {
+    const { name, description, readme, url, stars, language } = repoData
+    const analysis = deepAnalyzeReadme(readme, description)
+
+    return `
+## ${index + 1}. ${name}
+
+${description ? `**${description}**` : ''}
+
+${analysis.catchphrase && analysis.catchphrase !== description ? `「${analysis.catchphrase}」` : ''}
+
+${stars ? `⭐ ${stars.toLocaleString()} stars` : ''}${language ? ` | 言語: ${language}` : ''}
+
+### どんなツール？
+
+${generateWhatItDoes(name, analysis)}
+
+${analysis.mainFeatures.length > 0 ? `
+### 主な機能
+
+${analysis.mainFeatures.slice(0, 3).map((feature, i) => `
+**${feature.title}**
+
+${feature.explanation}
+
+${feature.benefit}
+`).join('\n')}
+` : ''}
+
+${analysis.usageFlow.length > 0 ? `
+### 使い方
+
+${analysis.usageFlow.slice(0, 3).map((step, i) => `${i + 1}. ${step.detail}`).join('\n')}
+
+${analysis.isEasy ? 'シンプルで使いやすそう。' : ''}
+` : ''}
+
+### こんな人におすすめ
+
+${analysis.mainFeatures[0] ? `- ${analysis.mainFeatures[0].title}が必要な人` : '- 効率的に作業したい人'}
+- 新しいツールを試したい人
+- 時間を節約したい人
+
+**詳しくはこちら：** ${url}
+
+---
+`
+  }).join('\n')
+
+  // まとめ
+  const conclusion = `
+## まとめ
+
+今回紹介した${repoDataList.length}つのツール、どれも魅力的でした。
+
+${repoDataList.map((r, i) => `${i + 1}. **${r.name}** - ${r.description || 'AI活用ツール'}`).join('\n')}
+
+どれか1つでも、あなたの役に立ちそうなツールがあれば嬉しいです。
+
+実際に使ってみて、また詳しくレビューしたいと思います。
+
+---
+
+※この記事は、各ツールの説明や情報を見て書きました。
+実際に使った体験談ではありませんが、興味を持った気持ちを素直に書いています。`
+
+  return `# ${repoDataList.length}つの便利なAIツールを見つけた
+
+${intro}
+
+${repoSections}
+
+${conclusion}`
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
 export default function UrlInput({ onSubmit }) {
-  const [url, setUrl] = useState('')
+  const [urls, setUrls] = useState([])
+  const [currentUrl, setCurrentUrl] = useState('')
   const [token, setToken] = useState('')
   const [error, setError] = useState('')
 
@@ -10,30 +11,59 @@ export default function UrlInput({ onSubmit }) {
     return pattern.test(url)
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleAddUrl = () => {
     setError('')
 
-    if (!url.trim()) {
+    if (!currentUrl.trim()) {
       setError('URLを入力してください')
       return
     }
 
-    if (!validateGitHubUrl(url)) {
+    if (!validateGitHubUrl(currentUrl)) {
       setError('正しいGitHubリポジトリのURLを入力してください')
       return
     }
 
-    onSubmit({ url: url.trim(), token: token.trim() })
+    // 重複チェック
+    if (urls.includes(currentUrl.trim())) {
+      setError('このURLは既に追加されています')
+      return
+    }
+
+    setUrls([...urls, currentUrl.trim()])
+    setCurrentUrl('')
+  }
+
+  const handleRemoveUrl = (index) => {
+    setUrls(urls.filter((_, i) => i !== index))
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (urls.length === 0) {
+      setError('少なくとも1つのURLを追加してください')
+      return
+    }
+
+    onSubmit({ urls, token: token.trim() })
   }
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText()
-      setUrl(text)
+      setCurrentUrl(text)
       setError('')
     } catch (err) {
       console.error('Failed to read clipboard:', err)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleAddUrl()
     }
   }
 
@@ -45,7 +75,10 @@ export default function UrlInput({ onSubmit }) {
           GitHubリポジトリのURLを入力
         </h2>
         <p className="text-lg text-gray-600">
-          記事にしたいAIアプリのGitHubリポジトリURLを貼り付けてください
+          記事にしたいAIアプリのGitHubリポジトリURLを追加してください
+        </p>
+        <p className="text-sm text-gray-500 mt-2">
+          複数のリポジトリをまとめて1つの記事にできます
         </p>
       </div>
 
@@ -57,23 +90,55 @@ export default function UrlInput({ onSubmit }) {
           <div className="flex gap-2">
             <input
               type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              value={currentUrl}
+              onChange={(e) => setCurrentUrl(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="https://github.com/username/repository"
               className="input-field flex-1"
             />
             <button
               type="button"
               onClick={handlePaste}
-              className="btn-secondary"
+              className="btn-secondary px-4"
             >
               貼り付け
+            </button>
+            <button
+              type="button"
+              onClick={handleAddUrl}
+              className="btn-primary px-6"
+            >
+              追加
             </button>
           </div>
           {error && (
             <p className="mt-2 text-sm text-red-600">{error}</p>
           )}
         </div>
+
+        {/* URLリスト */}
+        {urls.length > 0 && (
+          <div className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+            <h3 className="font-bold text-gray-800 mb-3">追加されたリポジトリ ({urls.length})</h3>
+            <div className="space-y-2">
+              {urls.map((url, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-300"
+                >
+                  <span className="text-sm text-gray-700 truncate flex-1">{url}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveUrl(index)}
+                    className="ml-2 text-red-600 hover:text-red-800 font-bold px-3 py-1 rounded"
+                  >
+                    削除
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-bold text-gray-700 mb-2">

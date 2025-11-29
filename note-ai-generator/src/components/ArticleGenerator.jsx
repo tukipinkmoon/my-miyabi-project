@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { generateArticle } from '../utils/articleTemplate'
 
-export default function ArticleGenerator({ repoData, onGenerated, onBack }) {
+export default function ArticleGenerator({ repoDataList, onGenerated, onBack }) {
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(0)
 
@@ -17,7 +17,7 @@ export default function ArticleGenerator({ repoData, onGenerated, onBack }) {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     setProgress(90)
-    const article = generateArticle(repoData)
+    const article = generateArticle(repoDataList)
 
     setProgress(100)
     await new Promise(resolve => setTimeout(resolve, 500))
